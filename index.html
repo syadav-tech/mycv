@@ -1,1 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shubham Yadav | Interactive CV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: A non-linear, interactive portfolio design. The structure prioritizes immediate impact by leading with a KPI dashboard of key achievements. This is followed by an clean, interactive vertical timeline for professional experience, a visual radar chart for skills with filtering capabilities, and a clean section for education. A sticky navigation bar enables easy movement between these thematic sections. This dashboard-and-drill-down-approach was chosen to make the CV scannable for high-level impact (for busy recruiters) while allowing for deep dives into specific areas of interest, making the experience more engaging and user-directed than a static document. -->
+    <!-- Visualization & Content Choices:
+        - Key Achievements -> Goal: Impress & Inform -> Viz: Interactive KPI cards -> Interaction: Hover to expand card, while other cards squeeze to the side with solid color. Show detailed bullet points on expanded card. Justification: Highlights quantifiable impact immediately while providing drill-down details in an immersive way, keeping other elements visible but de-emphasized. Method: HTML/CSS/JS.
+        - Professional Experience -> Goal: Show Chronology & Detail -> Viz: Interactive Vertical Timeline -> Interaction: Hover to expand/collapse job details, showing new project scale, budget, and resource details. Justification: Organizes dense information cleanly, preventing cognitive overload and encouraging exploration, now with enhanced project management context. Method: HTML/CSS/JS.
+        - Skills -> Goal: Compare & Organize -> Viz: Grid of interactive cards for skills, same as KPI dashboard. -> Interaction: Hover to expand card, while other cards squeeze to the side with solid color. Show detailed bullet points on expanded card. Justification: Provides a clear, detailed breakdown of competencies with an engaging interactive experience.
+        - Education & Certs -> Goal: Inform -> Viz: Clean Card Layout. -> Interaction: None. Justification: Clear, static presentation for foundational information. Method: HTML/CSS.
+        - LinkedIn Blogs -> Goal: Showcase thought leadership & expertise -> Viz: Grid of interactive tiles, each with a blog headline. -> Interaction: Hover to expand tile and reveal snippet/link. Justification: Presents external content in a consistent, interactive, and visually appealing format. Method: HTML/CSS/JS.
+    -->
+    <!-- CONFIRMATION: NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfaf8;
+            color: #333333;
+        }
+        .timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            left: 1.25rem;
+            top: 2.5rem;
+            height: calc(100% - 1rem);
+            background-color: #e5e7eb;
+            transform: translateX(-50%);
+        }
+
+        /* KPI Grid Container Styling (reused for skills) */
+        .kpi-grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Default 3 equal columns for KPI dashboard */
+            gap: 2rem; /* Consistent gap between cards */
+            transition: grid-template-columns 0.5s ease-in-out; /* Smooth transition for column change */
+        }
+
+        /* Specific grid setup for skills section */
+        .skills-grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* Changed to 4 columns for skills */
+            gap: 2rem;
+            transition: grid-template-columns 0.5s ease-in-out;
+            max-width: 80rem; /* Increased max-width to accommodate 4 columns better (5xl is 64rem) */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Adjust grid template columns based on which card is hovered (KPI Dashboard) */
+        .kpi-grid-container[data-active-card="1"] { grid-template-columns: 2.5fr 0.25fr 0.25fr; }
+        .kpi-grid-container[data-active-card="2"] { grid-template-columns: 0.25fr 2.5fr 0.25fr; }
+        .kpi-grid-container[data-active-card="3"] { grid-template-columns: 0.25fr 0.25fr 2.5fr; }
+
+        /* Adjust grid template columns based on which card is hovered (Skills Section - 4 columns) */
+        .skills-grid-container[data-active-card="1"] { grid-template-columns: 3fr 0.25fr 0.25fr 0.25fr; }
+        .skills-grid-container[data-active-card="2"] { grid-template-columns: 0.25fr 3fr 0.25fr 0.25fr; }
+        .skills-grid-container[data-active-card="3"] { grid-template-columns: 0.25fr 0.25fr 3fr 0.25fr; }
+        .skills-grid-container[data-active-card="4"] { grid-template-columns: 0.25fr 0.25fr 0.25fr 3fr; }
+
+
+        .kpi-card, .skill-card, .blog-card, .certification-card, .education-card { /* Added .blog-card, .certification-card, .education-card */
+            transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            background-color: #ffffff;
+            border-color: #e5e7eb;
+            color: #333333;
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+            z-index: 1; /* Default z-index */
+            min-height: 280px; /* Increased height for better text fit */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
+        }
+        .kpi-card:hover, .skill-card:hover, .blog-card:hover, .certification-card:hover, .education-card:hover { /* Added .blog-card, .certification-card, .education-card */
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        /* Style for non-hovered cards when one is active */
+        .kpi-grid-container[data-active-card] .kpi-card:not([data-active-card-element]),
+        .skills-grid-container[data-active-card] .skill-card:not([data-active-card-element]) {
+            background-color: #4f46e5; /* Solid blue color for squeezed tiles */
+            color: transparent; /* Hide text color */
+            padding: 0.1rem; /* Made padding even smaller for narrower look */
+            padding-top: 1rem; /* Maintain some vertical padding for squeezed tiles */
+            padding-bottom: 1rem; /* Maintain some vertical padding for squeezed tiles */
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Ensure content inside non-hovered cards is invisible */
+        .kpi-grid-container[data-active-card] .kpi-card:not([data-active-card-element]) .kpi-main-content,
+        .kpi-grid-container[data-active-card] .kpi-card:not([data-active-card-element]) .kpi-details,
+        .skills-grid-container[data-active-card] .skill-card:not([data-active-card-element]) .skill-main-content,
+        .skills-grid-container[data-active-card] .skill-card:not([data-active-card-element]) .skill-details {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .kpi-main-content, .skill-main-content, .blog-main-content, .certification-main-content, .education-main-content { /* Added .blog-main-content, .certification-main-content, .education-main-content */
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            opacity: 1;
+            text-align: center;
+            width: 100%;
+        }
+
+        .kpi-details, .skill-details, .certification-details { /* Added .certification-details */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.98); /* White overlay */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start; /* Align text to left */
+            padding: 1.5rem; /* Reduced padding for more space around text */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            pointer-events: none;
+            border-radius: 0.75rem; /* Match card border-radius */
+            box-sizing: border-box; /* Include padding in width/height */
+        }
+        .kpi-details ul, .skill-details ul, .certification-details ul { /* Added .certification-details ul */
+            padding-left: 1.25rem; /* Indent list items */
+        }
+        .kpi-details li, .skill-details li, .certification-details li { /* Added .certification-details li */
+            margin-bottom: 0.5rem;
+        }
+
+        /* Navigation Links */
+        .nav-link {
+            transition: color 0.2s;
+            position: relative;
+            color: #6b7280;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4f46e5;
+            transition: width 0.3s ease-in-out;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Expand Icon (Professional Timeline) */
+        .expand-icon {
+            margin-left: 8px;
+            display: inline-block;
+            transition: transform 0.3s ease-in-out;
+            color: #4f46e5;
+        }
+        .expand-icon.rotated {
+            transform: rotate(90deg);
+        }
+
+        /* Blog Section Tile Specific Styling */
+        .blog-grid-container {
+            display: grid;
+            grid-template-columns: 1fr; /* Single column layout for blogs */
+            gap: 2rem;
+            max-width: 5xl; /* Match other sections for consistent width */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* Adjustments for blog card height and padding */
+        .blog-card {
+            min-height: 120px; /* Set a minimum height for blog cards, can be adjusted */
+            height: auto; /* Let height adapt to content */
+            padding: 1.5rem; /* Base padding for the card */
+            display: flex; /* Make it a flex container */
+            flex-direction: column; /* Stack content vertically */
+            justify-content: flex-start; /* Align content to the top initially */
+            align-items: center; /* Center horizontally */
+            text-align: center; /* Center text within the card */
+        }
+        .blog-main-content {
+            /* Always visible */
+            opacity: 1;
+            visibility: visible;
+            transition: none; /* No transition needed as it doesn't change */
+            width: 100%; /* Ensure it takes full width */
+            margin-bottom: 0.5rem; /* Add some space below the title */
+        }
+        .blog-main-content h3 {
+            text-align: center; /* Ensure title is centered */
+        }
+        .blog-details {
+            position: relative; /* Changed from absolute to relative/static flow */
+            opacity: 0;
+            visibility: hidden;
+            height: 0; /* Initially collapse its height */
+            overflow: hidden; /* Hide overflow when collapsed */
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, height 0.3s ease-in-out; /* Add height transition */
+            padding: 0 1.5rem; /* Maintain horizontal padding */
+            box-sizing: border-box;
+            display: flex; /* Keep flex for centering snippet and link */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center; /* Centering for snippet */
+        }
+
+        .blog-card:hover .blog-details {
+            opacity: 1;
+            visibility: visible;
+            height: auto; /* Expand height on hover */
+            min-height: 50px; /* Ensure a minimum height for snippet + link */
+            padding-top: 0.5rem; /* Add some padding above the details when expanded */
+        }
+
+
+        /* Certification Section Tile Specific Styling */
+        .certifications-grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns for certifications */
+            gap: 2rem;
+            max-width: 5xl;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* Removed active-card logic for certifications, so no squeezing */
+
+        /* General styles for certification card (inherits most from .kpi-card) */
+        .certification-card {
+            min-height: 150px; /* Adjusted min-height for certification tiles */
+            padding: 1.5rem; /* Base padding for the card */
+            /* Ensure content is always visible within the card for non-interactive state */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center; /* Center content by default */
+        }
+        .certification-main-content {
+            /* This content will always be visible, no opacity changes */
+            opacity: 1 !important;
+            visibility: visible !important;
+            width: 100%;
+        }
+        .certification-details {
+            position: static; /* Remove absolute positioning */
+            height: auto; /* Allow height to be determined by content */
+            opacity: 1 !important; /* Always visible */
+            visibility: visible !important; /* Always visible */
+            pointer-events: auto; /* Allow interaction */
+            padding: 0.5rem 0; /* Adjusted padding within details for spacing */
+            text-align: center; /* Keep details text center-aligned */
+            width: 100%; /* Ensure it takes full width within card */
+        }
+        .certification-details ul {
+            list-style: none; /* Remove bullet points */
+            padding-left: 0; /* Remove default padding */
+        }
+        .certification-details li {
+            margin-bottom: 0; /* Remove margin between list items */
+        }
+        .certification-details h4 {
+            display: none; /* Hide the "Details:" heading, as title is already clear */
+        }
+
+        /* Education Card Specific Styling (Inherits from .kpi-card, just needs different min-height) */
+        .education-card {
+            min-height: auto; /* Allow content to dictate height */
+            padding: 1.5rem;
+            text-align: left; /* Keep education text left-aligned */
+            display: block; /* Override flex properties if needed */
+        }
+
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            box-sizing: border-box; /* Ensures padding doesn't add to the width */
+        }
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-error {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .success-message {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        /* Page break for printing */
+        @media print {
+            .page-break {
+                page-break-after: always;
+            }
+        }
+
+
+        /* Color Adjustments */
+        .text-stone-600 { color: #6b7280; }
+        .text-stone-500 { color: #888888; }
+        .text-stone-700 { color: #4b5563; }
+        .text-stone-800 { color: #1f2937; }
+        .text-stone-300 { color: #d1d5db; }
+
+        .text-indigo-600 { color: #4f46e5; }
+        .text-indigo-700 { color: #3730a3; }
+        .text-indigo-300 { color: #a78bfa; }
+
+        /* Media queries for responsiveness */
+        @media (max-width: 1023px) { /* Tablets */
+            .skills-grid-container {
+                grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+            }
+            .skills-grid-container[data-active-card="1"] { grid-template-columns: 2fr 0.5fr; }
+            .skills-grid-container[data-active-card="2"] { grid-template-columns: 0.5fr 2fr; }
+            .skills-grid-container[data-active-card="3"] { grid-template-columns: 2fr 0.5fr; }
+            .skills-grid-container[data-active-card="4"] { grid-template-columns: 0.5fr 2fr; }
+
+            .certifications-grid-container {
+                grid-template-columns: 1fr; /* Single column on tablets for certifications */
+            }
+            /* No active card states needed here as there's no squeezing */
+
+            .education-section-container {
+                grid-template-columns: 1fr; /* Single column on tablets for education */
+            }
+        }
+        @media (max-width: 767px) { /* Mobile */
+            .kpi-grid-container {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
+            .kpi-grid-container[data-active-card] .kpi-card:not([data-active-card-element]) {
+                display: none; /* Hide non-active squeezed tiles completely on mobile */
+            }
+            .skills-grid-container {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
+            .skills-grid-container[data-active-card] .skill-card:not([data-active-card-element]) {
+                display: none; /* Hide non-active squeezed tiles completely on mobile */
+            }
+            .certifications-grid-container {
+                grid-template-columns: 1fr; /* Single column on mobile for certifications */
+            }
+            /* No active card states needed here as there's no squeezing */
+            .blog-grid-container {
+                grid-template-columns: 1fr; /* Single column on mobile (already is) */
+            }
+            .education-section-container {
+                grid-template-columns: 1fr; /* Single column on mobile for education (already is) */
+            }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-indigo-600">
+                <a href="#">SY</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#impact" class="nav-link font-medium text-stone-600 hover:text-indigo-600">Impact</a>
+                <a href="#experience" class="nav-link font-medium text-stone-600 hover:text-indigo-600">Experience</a>
+                <a href="#skills" class="nav-link font-medium text-stone-600 hover:text-indigo-600">Skills</a>
+                <a href="#education" class="nav-link font-medium text-stone-600 hover:text-indigo-600">Education</a>
+                <a href="#certifications" class="nav-link font-medium text-stone-600 hover:text-indigo-600">Certifications</a>
+                <a href="#linkedin-blogs" class="nav-link font-medium text-stone-600 hover:text-indigo-600">Blogs</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 md:py-20">
+
+        <section id="hero" class="text-center mb-20 md:mb-28">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4">Shubham Yadav</h1>
+            <p class="text-lg md:text-xl text-stone-600 max-w-3xl mx-auto">PMP® Certified Engineering Programme Manager transforming complex engineering challenges into successful product launches.</p>
+             <div class="mt-8 flex justify-center items-center space-x-4">
+                <button id="emailMeButton" class="px-6 py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors duration-200">Email Me</button>
+                <a id="linkedinButton" href="https://www.linkedin.com/in/sy1394/" target="_blank" class="px-6 py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors duration-200">Connect on LinkedIn</a>
+            </div>
+        </section>
+
+        <section id="impact" class="mb-20 md:mb-28 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">Career Impact Dashboard</h2>
+            <p class="text-center text-stone-600 mb-12 max-w-2xl mx-auto">A summary of key quantifiable achievements demonstrating a consistent record of driving growth, efficiency, and successful project delivery. Hover over a card for more detail.</p>
+            <div class="kpi-grid-container max-w-5xl mx-auto">
+                <div class="kpi-card rounded-xl shadow-md border border-stone-200/50" data-card-id="1">
+                    <div class="kpi-main-content">
+                        <p class="text-5xl font-extrabold text-indigo-600 mb-2">6</p>
+                        <h3 class="text-lg font-bold mb-2">Successful Product Launches</h3>
+                    </div>
+                    <div class="kpi-details text-stone-800">
+                        <h4 class="text-lg font-bold text-indigo-700 mb-2">Key Highlights:</h4>
+                        <ul class="list-disc list-inside text-stone-700 text-sm space-y-1">
+                            <li>Design and optimized Tread Design specific to design requirement</li>
+                            <li>Optimized tyre construction to meet OEM performance targets</li>
+                            <li>Conducted benchmarking analysis</li>
+                            <li>Planned and coordinated prototype builds to testing</li>
+                            <li>Engineering documentation as per IATF16949 and PPAP coordination</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="kpi-card rounded-xl shadow-md border border-stone-200/50" data-card-id="2">
+                    <div class="kpi-main-content">
+                        <p class="text-5xl font-extrabold text-indigo-600 mb-2">$5.75M</p>
+                        <h3 class="text-lg font-bold mb-2">High-Value Project Management</h3>
+                    </div>
+                    <div class="kpi-details text-stone-800">
+                        <h4 class="text-lg font-bold text-indigo-700 mb-2">Key Highlights:</h4>
+                        <ul class="list-disc list-inside text-stone-700 text-sm space-y-1">
+                            <li>(Content to be added later)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="kpi-card rounded-xl shadow-md border border-stone-200/50" data-card-id="3">
+                    <div class="kpi-main-content">
+                        <p class="text-5xl font-extrabold text-indigo-600 mb-2">50%</p>
+                        <h3 class="text-lg font-bold mb-2">Production Line Efficiency Gain</h3>
+                    </div>
+                    <div class="kpi-details text-stone-800">
+                        <h4 class="text-lg font-bold text-indigo-700 mb-2">Key Highlights:</h4>
+                        <ul class="list-disc list-inside text-stone-700 text-sm space-y-1">
+                            <li>(Content to be added later)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page break after Career Impact Dashboard -->
+        <div class="page-break"></div>
+
+        <section id="experience" class="mb-20 md:mb-28 scroll-mt-20">
+             <h2 class="text-3xl font-bold text-center mb-4">Professional Timeline</h2>
+             <p class="text-center text-stone-600 mb-12 max-w-2xl mx-auto">An interactive overview of my career journey. Hover over any role to expand and see the key responsibilities, accomplishments, and project scale for that position.</p>
+            <div class="relative max-w-3xl mx-auto">
+                <div id="timeline-container"></div>
+            </div>
+        </section>
+
+        <section id="skills" class="mb-20 md:mb-28 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">Core Competencies</h2>
+            <!-- Removed the requested text below -->
+            <div class="skills-grid-container">
+                <!-- Skill cards will be dynamically inserted here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Page break after Core Competencies -->
+        <div class="page-break"></div>
+
+        <section id="education" class="mb-20 md:mb-28 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">Education</h2>
+            <p class="text-center text-stone-600 mb-12 max-w-2xl mx-auto">My academic background.</p>
+            <div class="max-w-3xl mx-auto space-y-8 education-section-container">
+                <div class="bg-white rounded-xl shadow-md border border-stone-200/50 p-6 education-card">
+                    <h3 class="text-xl font-bold text-indigo-700 mb-2">Master of Technology - Design Engineering</h3>
+                    <p class="text-stone-700">Birla Institute of Technology And Science, Pilani (BITS Pilani), India</p>
+                    <p class="text-sm text-stone-500">2020-2021</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md border border-stone-200/50 p-6 education-card">
+                    <h3 class="text-xl font-bold text-indigo-700 mb-2">Bachelor of Technology (BTech) - Chemical Engineering</h3>
+                    <p class="text-stone-700">SV National Institute of Technology (NIT Surat), India</p>
+                    <p class="text-sm text-stone-500">2012-2016</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="certifications" class="mb-20 md:mb-28 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">Professional Certifications</h2> <!-- Changed heading -->
+            <!-- Removed the requested text below -->
+            <div class="certifications-grid-container max-w-5xl mx-auto">
+                <!-- Certification tiles will be dynamically inserted here by JavaScript -->
+            </div>
+        </section>
+
+
+        <section id="linkedin-blogs" class="mb-20 md:mb-28 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">LinkedIn Blog Posts</h2>
+            <p class="text-center text-stone-600 mb-12 max-w-2xl mx-auto">Explore some of my articles on LinkedIn, showcasing my insights and thought leadership in various engineering and project management topics.</p>
+            <div class="blog-grid-container">
+                <!-- Blog tiles will be dynamically inserted here by JavaScript -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-800 text-stone-300 mt-10"> <!-- Reduced margin-top for less gap -->
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>Designed & Built by Shubham Yadav</p>
+            <!-- Removed the requested text below -->
+        </div>
+    </footer>
+
+    <!-- Email Me Modal -->
+    <div id="emailModalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-button" id="closeModalButton">&times;</button>
+            <h2 class="text-2xl font-bold text-center mb-6 text-indigo-700">Send Me a Message</h2>
+            <form id="emailForm">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" required class="focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">
+                    <p class="form-error" id="firstNameError"></p>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" required class="focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">
+                    <p class="form-error" id="lastNameError"></p>
+                </div>
+                <div class="form-group">
+                    <label for="email">Your Email</label>
+                    <input type="email" id="email" name="email" required class="focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">
+                    <p class="form-error" id="emailError"></p>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="5" required class="focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"></textarea>
+                    <p class="form-error" id="messageError"></p>
+                </div>
+                <button type="submit" class="w-full px-6 py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors duration-200 mt-4">Send Message</button>
+            </form>
+            <div id="formSuccessMessage" class="success-message hidden">
+                Your message has been sent successfully! I will get back to you soon.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const experienceData = [
+                {
+                    role: "Lower Steering System & Requirements - Wheel & Tyre", // Updated role
+                    company: "Jaguar Land Rover, UK",
+                    period: "2023 - Present",
+                    details: [
+                        "Championed Agile practices to enhance program delivery efficiency and ensure strict adherence to Gateway milestones.",
+                        "Orchestrated Systems Engineering Gateways, aligning critical product engineering deliverables across diverse functions, impacting multiple vehicle platforms.",
+                        "Represented team in key project reviews, strategically defining test parameters and success criteria to meet overarching program objectives for large-scale vehicle programs."
+                    ],
+                    projectDetails: {
+                        scale: "Multiple vehicle platforms & complex system integrations",
+                        budget: "Managed project inputs for components within multi-million pound programs.",
+                        resources: "Collaborated with cross-functional teams of 10+ engineers across design, test, and manufacturing."
+                    }
+                },
+                {
+                    role: "Deputy Manager - Product Design & Development",
+                    company: "JK Tyre & Industries Limited, India", // Updated company name
+                    period: "2016 - 2023",
+                    details: [
+                        "Successfully managed and delivered multiple end-to-end product development programs for leading OEM clients (e.g., Tata Motors, Suzuki), encompassing design, validation, and market launch.",
+                        "Administered comprehensive budgeting, strategic planning, and risk management processes for programs up to $5.75M, ensuring alignment with customer specifications.",
+                        "Directed product testing, validation, and homologation procedures for diverse product lines, achieving compliance with global and regional regulatory standards.",
+                        "Spearheaded creative design and development initiatives for new Rally, Passenger, and Commercial Vehicle products, managing product roadmaps and implementing user-centric design principles.",
+                        "Consistently delivered projects within defined timeframes, budgets, and scope, while leading talent development and performance management for teams of 5-8 engineers and specialists."
+                    ],
+                    projectDetails: {
+                        scale: "Multiple product lines (Rally, Passenger, Commercial Vehicles) and complex OEM integrations.",
+                        budget: "Managed program budgets up to $5.75M.",
+                        resources: "Led cross-functional teams of 5-8 engineers and specialists."
+                    }
+                }
+            ];
+
+            // Consolidated skills data for new tile structure
+            const kpiSkillsData = [
+                {
+                    title: "Project Management",
+                    details: [
+                        "PMP Certification",
+                        "Agile Methodologies",
+                        "Project Planning & Coordination",
+                        "Stakeholder Management",
+                        "Risk Mitigation",
+                        "Budget Control",
+                        "Schedule Management"
+                    ]
+                },
+                {
+                    title: "Product Development",
+                    details: [
+                        "FEA Analysis",
+                        "2D/3D Modelling (AutoCAD, Siemens NX, Inventor, SolidWorks)",
+                        "Technical Documentation",
+                        "Manufacturing Processes"
+                    ]
+                },
+                {
+                    title: "Leadership",
+                    details: [
+                        "Cross-Functional Leadership",
+                        "Team Leadership",
+                        "Business Case Development",
+                        "Strategic Thinking",
+                        "Client Relationship Management"
+                    ]
+                },
+                {
+                    title: "Quality and Process",
+                    details: [
+                        "Process Optimization",
+                        "Change Management",
+                        "Industry Standards",
+                        "Validation & Homologation",
+                        "DFMEA"
+                    ]
+                }
+            ];
+
+            const certificationData = [
+                {
+                    title: "Project Management Professional (PMP)®",
+                    issuer: "Project Management Institute (PMI)",
+                    year: "2024",
+                    details: [] // Removed details
+                },
+                {
+                    title: "Agile Project Management",
+                    issuer: "Google",
+                    year: "2024",
+                    details: [] // Removed details
+                },
+                {
+                    title: "AIAG VDA-DFMEA Facilitator",
+                    issuer: "Omnex",
+                    year: "2019",
+                    details: [] // Removed details
+                }
+            ];
+
+            const linkedinBlogs = [
+                {
+                    title: "Driving the Edge: Avoid the Top 5 Tyre Mistakes",
+                    snippet: "Ensure optimal vehicle performance and safety by understanding and avoiding these common errors related to tyre maintenance and usage.",
+                    url: "https://www.linkedin.com/pulse/driving-edge-avoid-top-5-tyre-mistakes-shubham-yadav-pmp--k5umc/?trackingId=6bK4fGYkSLWGo%2B6X6jzm5A%3D%3D",
+                },
+                {
+                    title: "AI Changing Roles in Modern DFMEA",
+                    snippet: "Explore how Artificial Intelligence is transforming the landscape of Design Failure Mode and Effects Analysis in modern engineering practices.",
+                    url: "https://www.linkedin.com/pulse/ai-changing-roles-modern-dfmea-shubham-yadav-pmp--potge/?trackingId=k8Az7aQfR1Kxr2MT4cQs9w%3D%3D",
+                },
+                {
+                    title: "Unseen Vibrations: How Your Wheels Secretly Shape Cars",
+                    snippet: "What makes a car feel planted, precise, or plush on the road? The answer goes deeper than just suspension or tyre choice - it lies in the natural freq...",
+                    url: "https://www.linkedin.com/pulse/unseen-vibrations-how-your-wheels-secretly-shape-cars-yadav-pmp--zjk0e/?trackingId=k8Az7aQfR1Kxr2MT4cQs9D%3D%3D",
+                },
+                {
+                    title: "Tyre Stiffness 101: Lateral vs. Cornering",
+                    snippet: "When tweaking vehicle dynamics, or discussing tyre behaviour, there are two words usually thrown about: lateral stiffness and cornering stiffness. The...",
+                    url: "https://www.linkedin.com/pulse/tyre-stiffness-101-lateral-vs-cornering-shubham-yadav-pmp--uxuqe/?trackingId=6bK4fGYkSLWGo%2B6X6jzm5A%3D%3D",
+                }
+            ];
+
+            const timelineContainer = document.getElementById('timeline-container');
+            experienceData.forEach((job, index) => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item relative pl-10 pb-10';
+                item.innerHTML = `
+                    <div class="absolute left-0 top-1 w-5 h-5 bg-white border-2 border-indigo-600 rounded-full"></div>
+                    <div class="flex items-center justify-between" data-index="${index}">
+                        <div>
+                            <p class="text-sm text-stone-500 mb-1">${job.period}</p>
+                            <h3 class="text-lg font-bold">${job.role}</h3>
+                            <p class="text-stone-600 font-medium">${job.company}</p>
+                        </div>
+                        <span class="expand-icon text-indigo-600 text-xl font-bold">▶</span>
+                    </div>
+                    <div id="details-${index}" class="mt-4 pl-2 border-l-2 border-stone-200 overflow-hidden transition-all duration-500 max-h-0">
+                        <ul class="list-disc list-inside space-y-2 text-stone-700">
+                           ${job.details.map(d => `<li>${d}</li>`).join('')}
+                        </ul>
+                        <div class="mt-4 pt-4 border-t border-stone-200 text-sm text-stone-600 space-y-1">
+                            <p><span class="font-semibold text-indigo-700">Project Scale:</span> ${job.projectDetails.scale}</p>
+                            <p><span class="font-semibold text-indigo-700">Budget Managed:</span> ${job.projectDetails.budget}</p>
+                            <p><span class="font-semibold text-indigo-700">Team/Resources:</span> ${job.projectDetails.resources}</p>
+                        </div>
+                    </div>
+                `;
+                timelineContainer.appendChild(item);
+
+                item.addEventListener('mouseover', function() {
+                    const currentDetailsPanel = item.querySelector('[id^="details-"]');
+                    const currentExpandIcon = item.querySelector('.expand-icon');
+                    const currentHeaderDiv = item.querySelector('[data-index]');
+
+                    // Collapse all other items
+                    const allPanels = timelineContainer.querySelectorAll('[id^="details-"]');
+                    const allIcons = timelineContainer.querySelectorAll('.expand-icon');
+                    const allHeaderDivs = timelineContainer.querySelectorAll('[data-index]');
+
+                    allPanels.forEach(panel => {
+                        if (panel !== currentDetailsPanel) {
+                            panel.style.maxHeight = '0px';
+                        }
+                    });
+                    allIcons.forEach(icon => {
+                        if (icon !== currentExpandIcon) {
+                            icon.classList.remove('rotated');
+                        }
+                    });
+                    allHeaderDivs.forEach(headerDiv => {
+                        if (headerDiv !== currentHeaderDiv) {
+                            headerDiv.classList.remove('font-extrabold');
+                        }
+                    });
+
+                    // Expand the current item
+                    currentDetailsPanel.style.maxHeight = currentDetailsPanel.scrollHeight + 'px';
+                    currentExpandIcon.classList.add('rotated');
+                    currentHeaderDiv.classList.add('font-extrabold');
+                });
+
+                item.addEventListener('mouseleave', function() {
+                    const currentDetailsPanel = item.querySelector('[id^="details-"]');
+                    const currentExpandIcon = item.querySelector('.expand-icon');
+                    const currentHeaderDiv = item.querySelector('[data-index]');
+
+                    // Collapse the current item
+                    currentDetailsPanel.style.maxHeight = '0px';
+                    currentExpandIcon.classList.remove('rotated');
+                    currentHeaderDiv.classList.remove('font-extrabold');
+                });
+            });
+
+            // KPI Dashboard Hover Logic
+            const kpiGridContainer = document.querySelector('.kpi-grid-container');
+            const kpiCards = document.querySelectorAll('.kpi-card');
+
+            kpiCards.forEach((card, index) => {
+                card.dataset.cardIndex = index + 1; // 1-indexed for CSS targeting
+
+                card.addEventListener('mouseenter', function() {
+                    kpiGridContainer.dataset.activeCard = this.dataset.cardIndex;
+                    this.dataset.activeCardElement = "true";
+
+                    this.querySelector('.kpi-main-content').style.opacity = '0';
+                    this.querySelector('.kpi-main-content').style.visibility = 'hidden';
+                    this.querySelector('.kpi-details').style.opacity = '1';
+                    this.querySelector('.kpi-details').style.visibility = 'visible';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    delete kpiGridContainer.dataset.activeCard;
+                    delete this.dataset.activeCardElement;
+
+                    kpiCards.forEach(c => {
+                        c.querySelector('.kpi-main-content').style.opacity = '1';
+                        c.querySelector('.kpi-main-content').style.visibility = 'visible';
+                        c.querySelector('.kpi-details').style.opacity = '0';
+                        c.querySelector('.kpi-details').style.visibility = 'hidden';
+                    });
+                });
+            });
+
+            // Skills Section Tiles Rendering and Hover Logic
+            const skillsGridContainer = document.querySelector('#skills .skills-grid-container');
+            if (skillsGridContainer) {
+                skillsGridContainer.innerHTML = ''; // Clear existing tiles to prevent duplication
+
+                kpiSkillsData.forEach((skillCategory, index) => {
+                    const skillCard = document.createElement('div');
+                    skillCard.className = 'skill-card rounded-xl shadow-md border border-stone-200/50';
+                    skillCard.dataset.cardId = index + 1; // 1-indexed for CSS targeting
+
+                    skillCard.innerHTML = `
+                        <div class="skill-main-content">
+                            <h3 class="text-xl font-bold mb-2 text-indigo-600">${skillCategory.title}</h3>
+                        </div>
+                        <div class="skill-details text-stone-800">
+                            <h4 class="text-lg font-bold text-indigo-700 mb-2">Skills in ${skillCategory.title}:</h4>
+                            <ul class="list-disc list-inside text-stone-700 text-sm space-y-1">
+                                ${skillCategory.details.map(detail => `<li>${detail}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    skillsGridContainer.appendChild(skillCard);
+
+                    skillCard.addEventListener('mouseenter', function() {
+                        skillsGridContainer.dataset.activeCard = this.dataset.cardId;
+                        this.dataset.activeCardElement = "true";
+
+                        this.querySelector('.skill-main-content').style.opacity = '0';
+                        this.querySelector('.skill-main-content').style.visibility = 'hidden';
+                        this.querySelector('.skill-details').style.opacity = '1';
+                        this.querySelector('.skill-details').style.visibility = 'visible';
+                    });
+
+                    skillCard.addEventListener('mouseleave', function() {
+                        delete skillsGridContainer.dataset.activeCard;
+                        delete this.dataset.activeCardElement;
+
+                        skillsGridContainer.querySelectorAll('.skill-card').forEach(c => {
+                            c.querySelector('.skill-main-content').style.opacity = '1';
+                            c.querySelector('.skill-main-content').style.visibility = 'visible';
+                            c.querySelector('.skill-details').style.opacity = '0';
+                            c.querySelector('.skill-details').style.visibility = 'hidden';
+                        });
+                    });
+                });
+            }
+
+            // Certifications Section Tiles Rendering and Hover Logic
+            const certificationsGridContainer = document.querySelector('.certifications-grid-container');
+            if (certificationsGridContainer) {
+                certificationsGridContainer.innerHTML = ''; // Clear existing content
+
+                certificationData.forEach((cert, index) => {
+                    const certCard = document.createElement('div');
+                    certCard.className = 'certification-card rounded-xl shadow-md border border-stone-200/50';
+                    // Removed data-card-id and data-active-card-element as they are not used for squeezing anymore
+
+                    certCard.innerHTML = `
+                        <div class="certification-main-content">
+                            <h3 class="text-xl font-bold mb-2 text-indigo-600">${cert.title}</h3>
+                            <p class="text-stone-700 text-sm">${cert.issuer}</p>
+                            <p class="text-stone-500 text-xs">${cert.year}</p>
+                        </div>
+                        <div class="certification-details text-stone-800">
+                            <!-- Removed bullet points here as requested -->
+                        </div>
+                    `;
+                    certificationsGridContainer.appendChild(certCard);
+
+                    // Add simple hover effect
+                    certCard.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-5px)';
+                        this.style.boxShadow = '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)';
+                    });
+
+                    certCard.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)';
+                    });
+                });
+            }
+
+            // Blog Section Tiles Rendering and Hover Logic
+            const blogGridContainer = document.querySelector('.blog-grid-container');
+            if (blogGridContainer) {
+                blogGridContainer.innerHTML = ''; // Clear existing content
+
+                linkedinBlogs.forEach((blog, index) => {
+                    const blogCard = document.createElement('a'); // Use 'a' tag for clickable cards
+                    blogCard.href = blog.url;
+                    blogCard.target = "_blank"; // Open in new tab
+                    blogCard.className = 'blog-card rounded-xl shadow-md border border-stone-200/50';
+                    blogCard.dataset.cardId = index + 1; // For potential future styling/tracking
+
+                    blogCard.innerHTML = `
+                        <div class="blog-main-content">
+                            <h3 class="text-xl font-bold mb-2 text-indigo-600">${blog.title}</h3>
+                        </div>
+                        <div class="blog-details text-stone-800">
+                            <p class="text-sm text-stone-700 mb-4">${blog.snippet}</p>
+                            <span class="text-indigo-700 hover:underline inline-flex items-center">
+                                Read More
+                                <span class="ml-2">↗</span>
+                            </span>
+                        </div>
+                    `;
+                    blogGridContainer.appendChild(blogCard);
+
+                    // No need to manipulate opacity/visibility in JS as CSS handles it
+                    // The simple hover lift effect is already applied through .kpi-card:hover selector
+                });
+            }
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section[id]');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            // Email Modal Logic
+            const emailMeButton = document.getElementById('emailMeButton');
+            const emailModalOverlay = document.getElementById('emailModalOverlay');
+            const closeModalButton = document.getElementById('closeModalButton');
+            const emailForm = document.getElementById('emailForm');
+            const formSuccessMessage = document.getElementById('formSuccessMessage');
+            const linkedinButton = document.getElementById('linkedinButton'); // Get the LinkedIn button
+
+            // Function to apply hover effect
+            function applyHoverEffect(element) {
+                element.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)';
+                });
+
+                element.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)';
+                });
+            }
+
+            // Apply hover effect to Email Me button and LinkedIn button
+            applyHoverEffect(emailMeButton);
+            applyHoverEffect(linkedinButton);
+
+            // Show modal
+            emailMeButton.addEventListener('click', () => {
+                emailModalOverlay.classList.add('show');
+                // Reset form and hide success message when opening
+                emailForm.reset();
+                formSuccessMessage.classList.add('hidden');
+                // Clear any previous error messages
+                document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
+            });
+
+            // Hide modal function
+            function hideEmailModal() {
+                emailModalOverlay.classList.remove('show');
+            }
+
+            // Hide modal when close button is clicked
+            closeModalButton.addEventListener('click', hideEmailModal);
+
+            // Hide modal when clicking outside the content
+            emailModalOverlay.addEventListener('click', (event) => {
+                if (event.target === emailModalOverlay) {
+                    hideEmailModal();
+                }
+            });
+
+            // Form submission and validation
+            emailForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                let isValid = true;
+                const formData = {
+                    firstName: emailForm.firstName.value.trim(),
+                    lastName: emailForm.lastName.value.trim(),
+                    email: emailForm.email.value.trim(),
+                    message: emailForm.message.value.trim()
+                };
+
+                // Clear previous errors
+                document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
+
+                // Validate First Name
+                if (formData.firstName === '') {
+                    document.getElementById('firstNameError').textContent = 'First Name is required.';
+                    isValid = false;
+                }
+
+                // Validate Last Name
+                if (formData.lastName === '') {
+                    document.getElementById('lastNameError').textContent = 'Last Name is required.';
+                    isValid = false;
+                }
+
+                // Validate Email
+                if (formData.email === '') {
+                    document.getElementById('emailError').textContent = 'Email is required.';
+                    isValid = false;
+                } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+                    document.getElementById('emailError').textContent = 'Please enter a valid email address.';
+                    isValid = false;
+                }
+
+                // Validate Message
+                if (formData.message === '') {
+                    document.getElementById('messageError').textContent = 'Message is required.';
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    // Simulate sending email (in a real app, this would be an API call)
+                    console.log('Form Data:', formData);
+                    formSuccessMessage.classList.remove('hidden');
+                    emailForm.reset(); // Clear the form after successful submission
+                    // Optionally, close the modal after a short delay
+                    setTimeout(hideEmailModal, 3000);
+                }
+            });
+
+            // Add hover effects for education cards
+            const educationCards = document.querySelectorAll('.education-card');
+            educationCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
 
