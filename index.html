@@ -13,7 +13,7 @@
     <!-- Application Structure Plan: A non-linear, interactive portfolio design. The structure prioritizes immediate impact by leading with a KPI dashboard of key achievements. This is followed by an clean, interactive vertical timeline for professional experience, a visual radar chart for skills with filtering capabilities, and a clean section for education. A sticky navigation bar enables easy movement between these thematic sections. This dashboard-and-drill-down-approach was chosen to make the CV scannable for high-level impact (for busy recruiters) while allowing for deep dives into specific areas of interest, making the experience more engaging and user-directed than a static document. -->
     <!-- Visualization & Content Choices:
         - Key Achievements -> Goal: Impress & Inform -> Viz: Interactive KPI cards -> Interaction: Hover to expand card, while other cards squeeze to the side with solid color. Show detailed bullet points on expanded card. Justification: Highlights quantifiable impact immediately while providing drill-down details in an immersive way, keeping other elements visible but de-emphasized. Method: HTML/CSS/JS.
-        - Professional Experience -> Goal: Show Chronology & Detail -> Viz: Interactive Vertical Timeline -> Interaction: Hover to expand/collapse job details, showing new project scale, budget, and resource details. Justification: Organizes dense information cleanly, preventing cognitive overload and encouraging exploration, now with enhanced project management context. Method: HTML/CSS/JS.
+        - Professional Experience -> Goal: Show Chronology & Detail -> Viz: Interactive Vertical Timeline -> Interaction: Hover to expand/collapse job details, showing new project scale, budget, and resource details. Justification: organizes dense information cleanly, preventing cognitive overload and encouraging exploration, now with enhanced project management context. Method: HTML/CSS/JS.
         - Skills -> Goal: Compare & Organize -> Viz: Grid of interactive cards for skills, same as KPI dashboard. -> Interaction: Hover to expand card, while other cards squeeze to the side with solid color. Show detailed bullet points on expanded card. Justification: Provides a clear, detailed breakdown of competencies with an engaging interactive experience.
         - Education & Certs -> Goal: Inform -> Viz: Clean Card Layout. -> Interaction: None. Justification: Clear, static presentation for foundational information. Method: HTML/CSS.
         - LinkedIn Blogs -> Goal: Showcase thought leadership & expertise -> Viz: Grid of interactive tiles, each with a blog headline. -> Interaction: Hover to expand tile and reveal snippet/link. Justification: Presents external content in a consistent, interactive, and visually appealing format. Method: HTML/CSS/JS.
@@ -176,6 +176,32 @@
             transform: rotate(90deg);
         }
 
+        /* Professional Timeline Item Header Styling */
+        .timeline-item .timeline-header {
+            background-color: #ffffff;
+            padding: 1rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
+            transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+            cursor: pointer; /* Indicate clickability */
+        }
+
+        .timeline-item:hover .timeline-header {
+            background-color: #4f46e5; /* Highlight on hover */
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* Lift shadow */
+            transform: translateY(-3px); /* Slight lift */
+        }
+
+        .timeline-item:hover .timeline-header h3,
+        .timeline-item:hover .timeline-header p,
+        .timeline-item:hover .timeline-header .expand-icon {
+            color: #ffffff; /* Text color to white on hover */
+        }
+        /* Ensure the dot itself stays colored */
+        .timeline-item:hover .absolute.left-0.top-1 {
+            background-color: #ffffff; /* Dot background stays white or can be customized */
+        }
+
         /* Blog Section Tile Specific Styling */
         .blog-grid-container {
             display: grid;
@@ -195,6 +221,7 @@
             justify-content: flex-start; /* Align content to the top initially */
             align-items: center; /* Center horizontally */
             text-align: center; /* Center text within the card */
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Added background-color and color to transition */
         }
         .blog-main-content {
             /* Always visible */
@@ -231,6 +258,20 @@
             padding-top: 0.5rem; /* Add some padding above the details when expanded */
         }
 
+        /* New hover styles for blog cards */
+        .blog-card:hover {
+            background-color: #4f46e5; /* Highlight color */
+        }
+        .blog-card:hover h3,
+        .blog-card:hover p,
+        .blog-card:hover span { /* Apply to all text elements within the card */
+            color: #ffffff; /* Text color on hover */
+        }
+        /* Ensure the link arrow also turns white */
+        .blog-card:hover .blog-details span.ml-2 {
+            color: #ffffff;
+        }
+
 
         /* Certification Section Tile Specific Styling */
         .certifications-grid-container {
@@ -253,6 +294,7 @@
             align-items: center;
             justify-content: center;
             text-align: center; /* Center content by default */
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Added background-color and color to transition */
         }
         .certification-main-content {
             /* This content will always be visible, no opacity changes */
@@ -281,12 +323,30 @@
             display: none; /* Hide the "Details:" heading, as title is already clear */
         }
 
+        /* New hover styles for certification cards */
+        .certification-card:hover {
+            background-color: #4f46e5; /* Highlight color */
+        }
+        .certification-card:hover h3,
+        .certification-card:hover p {
+            color: #ffffff; /* Text color on hover */
+        }
+
         /* Education Card Specific Styling (Inherits from .kpi-card, just needs different min-height) */
         .education-card {
             min-height: auto; /* Allow content to dictate height */
             padding: 1.5rem;
             text-align: left; /* Keep education text left-aligned */
             display: block; /* Override flex properties if needed */
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Added background-color and color to transition */
+        }
+        /* Existing hover styles for education cards */
+        .education-card:hover {
+            background-color: #4f46e5; /* Highlight color */
+        }
+        .education-card:hover h3,
+        .education-card:hover p {
+            color: #ffffff; /* Text color on hover */
         }
 
 
@@ -408,6 +468,14 @@
             .education-section-container {
                 grid-template-columns: 1fr; /* Single column on tablets for education */
             }
+
+            footer .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            footer .container p {
+                margin-bottom: 0.5rem;
+            }
         }
         @media (max-width: 767px) { /* Mobile */
             .kpi-grid-container {
@@ -455,14 +523,16 @@
 
     <main class="container mx-auto px-6 py-12 md:py-20">
 
+        <!-- Hero Section - Added back -->
         <section id="hero" class="text-center mb-20 md:mb-28">
-            <h1 class="text-4xl md:text-6xl font-extrabold mb-4">Shubham Yadav</h1>
-            <p class="text-lg md:text-xl text-stone-600 max-w-3xl mx-auto">PMP® Certified Engineering Programme Manager transforming complex engineering challenges into successful product launches.</p>
-             <div class="mt-8 flex justify-center items-center space-x-4">
-                <button id="emailMeButton" class="px-6 py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors duration-200">Email Me</button>
-                <a id="linkedinButton" href="https://www.linkedin.com/in/sy1394/" target="_blank" class="px-6 py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors duration-200">Connect on LinkedIn</a>
+            <h1 class="text-5xl md:text-6xl font-extrabold text-stone-800 mb-4">Shubham Yadav</h1>
+            <p class="text-xl md:text-2xl text-stone-600 max-w-3xl mx-auto mb-8">PMP® Certified Engineering Programme Manager transforming complex engineering challenges into successful product launches.</p>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <button id="emailMeButton" class="px-8 py-3 rounded-md bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors duration-200 text-lg shadow-md">Email Me</button>
+                <a id="linkedinButton" href="https://www.linkedin.com/in/sy1394/" target="_blank" class="px-8 py-3 rounded-md bg-indigo-700 text-white font-semibold hover:bg-indigo-600 transition-colors duration-200 text-lg shadow-md">Connect on LinkedIn</a>
             </div>
         </section>
+
 
         <section id="impact" class="mb-20 md:mb-28 scroll-mt-20">
             <h2 class="text-3xl font-bold text-center mb-4">Career Impact Dashboard</h2>
@@ -476,23 +546,25 @@
                     <div class="kpi-details text-stone-800">
                         <h4 class="text-lg font-bold text-indigo-700 mb-2">Key Highlights:</h4>
                         <ul class="list-disc list-inside text-stone-700 text-sm space-y-1">
-                            <li>Design and optimized Tread Design specific to design requirement</li>
-                            <li>Optimized tyre construction to meet OEM performance targets</li>
-                            <li>Conducted benchmarking analysis</li>
-                            <li>Planned and coordinated prototype builds to testing</li>
-                            <li>Engineering documentation as per IATF16949 and PPAP coordination</li>
+                            <li>Led <strong>6 successful product launches</strong> from concept to market for OEMs like <em>Tata Motors</em> and <em>Suzuki</em>.</li>
+                            <li>Optimized <strong>Tread Design</strong> and <strong>tyre construction</strong> to exceed <em>OEM performance targets</em>.</li>
+                            <li>Directed rigorous testing and homologation, ensuring <strong>global regulatory compliance</strong>.</li>
+                            <li>Coordinated <strong>IATF16949 documentation</strong> and <strong>PPAP</strong> for seamless manufacturing integration.</li>
                         </ul>
                     </div>
                 </div>
                 <div class="kpi-card rounded-xl shadow-md border border-stone-200/50" data-card-id="2">
                     <div class="kpi-main-content">
-                        <p class="text-5xl font-extrabold text-indigo-600 mb-2">$5.75M</p>
+                        <p class="text-5xl font-extrabold text-indigo-600 mb-2">$2.0M</p>
                         <h3 class="text-lg font-bold mb-2">High-Value Project Management</h3>
                     </div>
                     <div class="kpi-details text-stone-800">
                         <h4 class="text-lg font-bold text-indigo-700 mb-2">Key Highlights:</h4>
                         <ul class="list-disc list-inside text-stone-700 text-sm space-y-1">
-                            <li>(Content to be added later)</li>
+                            <li>Managed comprehensive <strong>project budgeting</strong>, strategic planning, and <strong>risk management</strong> up to <em>$2.0M</em>.</li>
+                            <li>Championed <strong>Agile practices</strong> and <strong>Systems Engineering Gateways</strong>, enhancing delivery across <em>multiple vehicle platforms</em>.</li>
+                            <li>Led and mentored cross-functional teams of <strong>5-10+ engineers</strong> to achieve project milestones.</li>
+                            <li>Effectively managed stakeholders, defining parameters to meet <em>overarching program objectives</em>.</li>
                         </ul>
                     </div>
                 </div>
@@ -504,7 +576,10 @@
                     <div class="kpi-details text-stone-800">
                         <h4 class="text-lg font-bold text-indigo-700 mb-2">Key Highlights:</h4>
                         <ul class="list-disc list-inside text-stone-700 text-sm space-y-1">
-                            <li>(Content to be added later)</li>
+                            <li>Implemented process improvements yielding a <strong>50% increase in production line efficiency</strong> and throughput.</li>
+                            <li>Applied <strong>Lean manufacturing principles</strong> to reduce waste and achieve significant <em>cost savings</em>.</li>
+                            <li>Integrated <strong>design for manufacturability (DFM)</strong> principles, optimizing product designs for efficient production.</li>
+                            <li>Drove <strong>change management</strong> for sustained improvements in productivity and reduced lead times.</li>
                         </ul>
                     </div>
                 </div>
@@ -569,10 +644,10 @@
 
     </main>
 
-    <footer class="bg-stone-800 text-stone-300 mt-10"> <!-- Reduced margin-top for less gap -->
-        <div class="container mx-auto px-6 py-8 text-center">
-            <p>Designed & Built by Shubham Yadav</p>
-            <!-- Removed the requested text below -->
+    <footer class="bg-stone-800 text-stone-300 mt-10">
+        <div class="container mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center">
+            <p class="text-left mb-2 md:mb-0">Designed & Built by Shubham Yadav</p>
+            <a id="linkedinFooterButton" href="https://www.linkedin.com/in/sy1394/" target="_blank" class="px-4 py-2 rounded-md bg-indigo-700 text-white font-semibold hover:bg-indigo-600 transition-colors duration-200 text-sm">Connect on LinkedIn</a>
         </div>
     </footer>
 
@@ -599,7 +674,7 @@
                 </div>
                 <div class="form-group">
                     <label for="message">Message</label>
-                    <textarea id="message" name="message" rows="5" required class="focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"></textarea>
+                    <textarea id="message" name="message" rows="5" required class="focus:border-indigo-500 focus:ring-1 focus:ring-500 outline-none"></textarea>
                     <p class="form-error" id="messageError"></p>
                 </div>
                 <button type="submit" class="w-full px-6 py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors duration-200 mt-4">Send Message</button>
@@ -620,7 +695,7 @@
                     period: "2023 - Present",
                     details: [
                         "Championed Agile practices to enhance program delivery efficiency and ensure strict adherence to Gateway milestones.",
-                        "Orchestrated Systems Engineering Gateways, aligning critical product engineering deliverables across diverse functions, impacting multiple vehicle platforms.",
+                        "Facilitated Systems Engineering Gateways, aligning critical product engineering deliverables across diverse functions, impacting multiple vehicle platforms.", // Changed 'Orchestrated' to 'Facilitated'
                         "Represented team in key project reviews, strategically defining test parameters and success criteria to meet overarching program objectives for large-scale vehicle programs."
                     ],
                     projectDetails: {
@@ -635,14 +710,14 @@
                     period: "2016 - 2023",
                     details: [
                         "Successfully managed and delivered multiple end-to-end product development programs for leading OEM clients (e.g., Tata Motors, Suzuki), encompassing design, validation, and market launch.",
-                        "Administered comprehensive budgeting, strategic planning, and risk management processes for programs up to $5.75M, ensuring alignment with customer specifications.",
+                        "Administered comprehensive budgeting, strategic planning, and risk management processes for programs up to $2.0M, ensuring alignment with customer specifications.", // Updated to $2.0M
                         "Directed product testing, validation, and homologation procedures for diverse product lines, achieving compliance with global and regional regulatory standards.",
                         "Spearheaded creative design and development initiatives for new Rally, Passenger, and Commercial Vehicle products, managing product roadmaps and implementing user-centric design principles.",
                         "Consistently delivered projects within defined timeframes, budgets, and scope, while leading talent development and performance management for teams of 5-8 engineers and specialists."
                     ],
                     projectDetails: {
                         scale: "Multiple product lines (Rally, Passenger, Commercial Vehicles) and complex OEM integrations.",
-                        budget: "Managed program budgets up to $5.75M.",
+                        budget: "Managed program budgets up to $2.0M.", // Updated to $2.0M
                         resources: "Led cross-functional teams of 5-8 engineers and specialists."
                     }
                 }
@@ -743,7 +818,7 @@
                 item.className = 'timeline-item relative pl-10 pb-10';
                 item.innerHTML = `
                     <div class="absolute left-0 top-1 w-5 h-5 bg-white border-2 border-indigo-600 rounded-full"></div>
-                    <div class="flex items-center justify-between" data-index="${index}">
+                    <div class="flex items-center justify-between timeline-header" data-index="${index}">
                         <div>
                             <p class="text-sm text-stone-500 mb-1">${job.period}</p>
                             <h3 class="text-lg font-bold">${job.role}</h3>
@@ -767,12 +842,12 @@
                 item.addEventListener('mouseover', function() {
                     const currentDetailsPanel = item.querySelector('[id^="details-"]');
                     const currentExpandIcon = item.querySelector('.expand-icon');
-                    const currentHeaderDiv = item.querySelector('[data-index]');
+                    const currentHeaderDiv = item.querySelector('.timeline-header'); // Select the header div
 
                     // Collapse all other items
                     const allPanels = timelineContainer.querySelectorAll('[id^="details-"]');
                     const allIcons = timelineContainer.querySelectorAll('.expand-icon');
-                    const allHeaderDivs = timelineContainer.querySelectorAll('[data-index]');
+                    const allHeaderDivs = timelineContainer.querySelectorAll('.timeline-header'); // Select all header divs
 
                     allPanels.forEach(panel => {
                         if (panel !== currentDetailsPanel) {
@@ -793,13 +868,13 @@
                     // Expand the current item
                     currentDetailsPanel.style.maxHeight = currentDetailsPanel.scrollHeight + 'px';
                     currentExpandIcon.classList.add('rotated');
-                    currentHeaderDiv.classList.add('font-extrabold');
+                    currentHeaderDiv.classList.add('font-extrabold'); // Keep this for bolding on active
                 });
 
                 item.addEventListener('mouseleave', function() {
                     const currentDetailsPanel = item.querySelector('[id^="details-"]');
                     const currentExpandIcon = item.querySelector('.expand-icon');
-                    const currentHeaderDiv = item.querySelector('[data-index]');
+                    const currentHeaderDiv = item.querySelector('.timeline-header'); // Select the header div
 
                     // Collapse the current item
                     currentDetailsPanel.style.maxHeight = '0px';
@@ -972,122 +1047,129 @@
             });
 
             // Email Modal Logic
-            const emailMeButton = document.getElementById('emailMeButton');
+            const emailMeButton = document.getElementById('emailMeButton'); 
             const emailModalOverlay = document.getElementById('emailModalOverlay');
             const closeModalButton = document.getElementById('closeModalButton');
             const emailForm = document.getElementById('emailForm');
             const formSuccessMessage = document.getElementById('formSuccessMessage');
-            const linkedinButton = document.getElementById('linkedinButton'); // Get the LinkedIn button
+            const linkedinButton = document.getElementById('linkedinButton'); 
+            const linkedinFooterButton = document.getElementById('linkedinFooterButton'); 
 
             // Function to apply hover effect
             function applyHoverEffect(element) {
-                element.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px)';
-                    this.style.boxShadow = '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)';
-                });
+                // Ensure the element exists before adding event listeners
+                if (element) {
+                    element.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-5px)';
+                        this.style.boxShadow = '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)';
+                    });
 
-                element.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)';
+                    element.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)';
+                    });
+                } else {
+                    console.error("Element passed to applyHoverEffect is null.");
+                }
+            }
+
+            // Apply hover effect to existing buttons
+            applyHoverEffect(emailMeButton);
+            applyHoverEffect(linkedinButton);
+            applyHoverEffect(linkedinFooterButton); 
+
+            // Show modal logic
+            if (emailMeButton) { // Check before adding listener
+                emailMeButton.addEventListener('click', () => {
+                    if (emailModalOverlay) { 
+                        emailModalOverlay.classList.add('show');
+                        emailForm.reset();
+                        if (formSuccessMessage) { 
+                            formSuccessMessage.classList.add('hidden');
+                        }
+                        document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
+                    }
                 });
             }
 
-            // Apply hover effect to Email Me button and LinkedIn button
-            applyHoverEffect(emailMeButton);
-            applyHoverEffect(linkedinButton);
-
-            // Show modal
-            emailMeButton.addEventListener('click', () => {
-                emailModalOverlay.classList.add('show');
-                // Reset form and hide success message when opening
-                emailForm.reset();
-                formSuccessMessage.classList.add('hidden');
-                // Clear any previous error messages
-                document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
-            });
 
             // Hide modal function
             function hideEmailModal() {
-                emailModalOverlay.classList.remove('show');
+                if (emailModalOverlay) { 
+                    emailModalOverlay.classList.remove('show');
+                }
             }
 
             // Hide modal when close button is clicked
-            closeModalButton.addEventListener('click', hideEmailModal);
+            if (closeModalButton) { 
+                closeModalButton.addEventListener('click', hideEmailModal);
+            }
 
             // Hide modal when clicking outside the content
-            emailModalOverlay.addEventListener('click', (event) => {
-                if (event.target === emailModalOverlay) {
-                    hideEmailModal();
-                }
-            });
+            if (emailModalOverlay) { 
+                emailModalOverlay.addEventListener('click', (event) => {
+                    if (event.target === emailModalOverlay) {
+                        hideEmailModal();
+                    }
+                });
+            }
+
 
             // Form submission and validation
-            emailForm.addEventListener('submit', (event) => {
-                event.preventDefault(); // Prevent default form submission
+            if (emailForm) { 
+                emailForm.addEventListener('submit', (event) => {
+                    event.preventDefault(); 
 
-                let isValid = true;
-                const formData = {
-                    firstName: emailForm.firstName.value.trim(),
-                    lastName: emailForm.lastName.value.trim(),
-                    email: emailForm.email.value.trim(),
-                    message: emailForm.message.value.trim()
-                };
+                    let isValid = true;
+                    const formData = {
+                        firstName: emailForm.firstName.value.trim(),
+                        lastName: emailForm.lastName.value.trim(),
+                        email: emailForm.email.value.trim(),
+                        message: emailForm.message.value.trim()
+                    };
 
-                // Clear previous errors
-                document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
+                    document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
 
-                // Validate First Name
-                if (formData.firstName === '') {
-                    document.getElementById('firstNameError').textContent = 'First Name is required.';
-                    isValid = false;
-                }
+                    if (formData.firstName === '') {
+                        const firstNameError = document.getElementById('firstNameError');
+                        if (firstNameError) firstNameError.textContent = 'First Name is required.';
+                        isValid = false;
+                    }
 
-                // Validate Last Name
-                if (formData.lastName === '') {
-                    document.getElementById('lastNameError').textContent = 'Last Name is required.';
-                    isValid = false;
-                }
+                    if (formData.lastName === '') {
+                        const lastNameError = document.getElementById('lastNameError');
+                        if (lastNameError) lastNameError.textContent = 'Last Name is required.';
+                        isValid = false;
+                    }
 
-                // Validate Email
-                if (formData.email === '') {
-                    document.getElementById('emailError').textContent = 'Email is required.';
-                    isValid = false;
-                } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-                    document.getElementById('emailError').textContent = 'Please enter a valid email address.';
-                    isValid = false;
-                }
+                    if (formData.email === '') {
+                        const emailError = document.getElementById('emailError');
+                        if (emailError) emailError.textContent = 'Email is required.';
+                        isValid = false;
+                    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+                        const emailError = document.getElementById('emailError');
+                        if (emailError) emailError.textContent = 'Please enter a valid email address.';
+                        isValid = false;
+                    }
 
-                // Validate Message
-                if (formData.message === '') {
-                    document.getElementById('messageError').textContent = 'Message is required.';
-                    isValid = false;
-                }
+                    if (formData.message === '') {
+                        const messageError = document.getElementById('messageError');
+                        if (messageError) messageError.textContent = 'Message is required.';
+                        isValid = false;
+                    }
 
-                if (isValid) {
-                    // Simulate sending email (in a real app, this would be an API call)
-                    console.log('Form Data:', formData);
-                    formSuccessMessage.classList.remove('hidden');
-                    emailForm.reset(); // Clear the form after successful submission
-                    // Optionally, close the modal after a short delay
-                    setTimeout(hideEmailModal, 3000);
-                }
-            });
-
-            // Add hover effects for education cards
-            const educationCards = document.querySelectorAll('.education-card');
-            educationCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px)';
-                    this.style.boxShadow = '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)';
+                    if (isValid) {
+                        console.log('Form Data:', formData);
+                        if (formSuccessMessage) { 
+                            formSuccessMessage.classList.remove('hidden');
+                        }
+                        emailForm.reset(); 
+                        setTimeout(hideEmailModal, 3000);
+                    }
                 });
+            }
 
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)';
-                });
-            });
         });
     </script>
 </body>
 </html>
-
