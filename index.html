@@ -336,12 +336,17 @@
         .education-section-container {
             display: flex;
             flex-direction: column;
-            /* Removed justify-content: center; to align heading to the top */
             background-color: #ffffff;
             border-radius: 0.75rem; /* rounded-xl */
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
             border: 1px solid #e5e7eb; /* border border-stone-200/50 */
             padding: 1.5rem; /* p-6 */
+        }
+        /* Style for the container of education cards within the education column */
+        .education-section-container > .space-y-8 {
+            margin-top: auto;
+            margin-bottom: auto;
+            width: 100%; /* Ensure it takes full width for centering content inside */
         }
 
 
@@ -608,7 +613,7 @@
                 <!-- Education Column -->
                 <div class="education-section-container">
                     <h3 class="text-2xl font-bold text-indigo-700 text-center mb-6">Education</h3>
-                    <div class="space-y-8">
+                    <div class="space-y-8 my-auto">
                         <div class="education-card">
                             <h4 class="text-xl font-bold text-indigo-700 mb-2">Master of Technology - Design Engineering</h4>
                             <p class="text-stone-700">Birla Institute of Technology And Science, Pilani (BITS Pilani), India</p>
