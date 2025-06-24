@@ -332,6 +332,18 @@
             }
         }
 
+        /* Education Column Container Styling to center items */
+        .education-section-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
+            border: 1px solid #e5e7eb; /* border border-stone-200/50 */
+            padding: 1.5rem; /* p-6 */
+        }
+
 
         /* Modal Styles */
         .modal-overlay {
@@ -594,7 +606,7 @@
 
             <div class="edu-certs-grid">
                 <!-- Education Column -->
-                <div class="bg-white rounded-xl shadow-md border border-stone-200/50 p-6 education-section-container">
+                <div class="education-section-container">
                     <h3 class="text-2xl font-bold text-indigo-700 text-center mb-6">Education</h3>
                     <div class="space-y-8">
                         <div class="education-card">
