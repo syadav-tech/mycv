@@ -553,13 +553,13 @@
                 </div>
                 <div class="kpi-card rounded-xl shadow-md border border-stone-200/50" data-card-id="2">
                     <div class="kpi-main-content">
-                        <p class="text-5xl font-extrabold text-indigo-600 mb-2">$5.0M</p>
+                        <p class="text-5xl font-extrabold text-indigo-600 mb-2">$5.75M</p>
                         <h3 class="text-lg font-bold mb-2">High-Value Project Management</h3>
                     </div>
                     <div class="kpi-details text-stone-800">
                         <h4 class="text-lg font-bold text-indigo-700 mb-2">Key Highlights:</h4>
                         <ul class="list-disc list-inside text-stone-700 text-sm space-y-1">
-                            <li>Managed comprehensive <strong>project budgeting</strong>, strategic planning, and <strong>risk management</strong> up to <em>$5.0M</em>.</li>
+                            <li>Managed comprehensive <strong>project budgeting</strong>, strategic planning, and <strong>risk management</strong> up to <em>$5.75M</em>.</li>
                             <li>Championed <strong>Agile practices</strong> and <strong>Systems Engineering Gateways</strong>, enhancing delivery across <em>multiple vehicle platforms</em>.</li>
                             <li>Led and mentored cross-functional teams of <strong>5-10+ engineers</strong> to achieve project milestones.</li>
                             <li>Effectively managed stakeholders, defining parameters to meet <em>overarching program objectives</em>.</li>
@@ -574,8 +574,7 @@
                     <div class="kpi-details text-stone-800">
                         <h4 class="text-lg font-bold text-indigo-700 mb-2">Key Highlights:</h4>
                         <ul class="list-disc list-inside text-stone-700 text-sm space-y-1">
-                            <li>Implemented process improvements yielding a <strong>50% increase in production line efficiency</strong> and throughput.</li>
-                            <li>Applied <strong>Lean manufacturing principles</strong> to reduce waste and achieve significant <em>cost savings</em>.</li>
+                            <li>Implemented process improvements yielding a <strong>50% increase in production line efficiency</strong> and throughput by design standardisation through the product line.</li>
                             <li>Integrated <strong>design for manufacturability (DFM)</strong> principles, optimizing product designs for efficient production.</li>
                             <li>Drove <strong>change management</strong> for sustained improvements in productivity and reduced lead times.</li>
                         </ul>
@@ -670,9 +669,8 @@
                         "Represented team in key project reviews, strategically defining test parameters and success criteria to meet overarching program objectives for large-scale vehicle programs."
                     ],
                     projectDetails: {
-                        scale: "Multiple vehicle platforms & complex system integrations",
-                        budget: "Managed project inputs for components within multi-million pound programs.",
-                        resources: "Collaborated with cross-functional teams of 10+ engineers across design, test, and manufacturing."
+                        scale: "Complex wheel & tyre system integrations across multiple vehicle platforms",
+                        resources: "Collaborated with cross-functional teams of 10+ engineers across design, test, and engineering."
                     }
                 },
                 {
@@ -681,15 +679,15 @@
                     period: "2016 - 2023",
                     details: [
                         "Successfully managed and delivered multiple end-to-end product development programs for leading OEM clients (e.g., Tata Motors, Suzuki), encompassing design, validation, and market launch.",
-                        "Administered comprehensive budgeting, strategic planning, and risk management processes for programs up to $5.0M, ensuring alignment with customer specifications.", 
+                        "Administered comprehensive budgeting, strategic planning, and risk management processes for programs up to $5.75M, ensuring alignment with customer specifications.", // Updated to $5.75M
                         "Directed product testing, validation, and homologation procedures for diverse product lines, achieving compliance with global and regional regulatory standards.",
                         "Spearheaded creative design and development initiatives for new Rally, Passenger, and Commercial Vehicle products, managing product roadmaps and implementing user-centric design principles.",
                         "Consistently delivered projects within defined timeframes, budgets, and scope, while leading talent development and performance management for teams of 5-8 engineers and specialists."
                     ],
                     projectDetails: {
                         scale: "Multiple product lines (Rally, Passenger, Commercial Vehicles) and complex OEM integrations.",
-                        budget: "Managed program budgets up to $5.0M.", 
-                        resources: "Led cross-functional teams of 5-8 engineers and specialists."
+                        budget: "Managed program budgets up to $5.75M.", // Updated to $5.75M
+                        resources: "Led cross-functional teams of 10-15 including product engineers, technical specialist, testing, manufacturing and quality."
                     }
                 }
             ];
@@ -762,6 +760,11 @@
 
             const linkedinBlogs = [
                 {
+                    title: "From Fast to Last: Engineering in the Age of Circularity",
+                    snippet: "Exploring how engineering principles are evolving to support a circular economy, focusing on sustainability and longevity in product design.",
+                    url: "https://www.linkedin.com/pulse/from-fast-last-engineering-age-circularity-shubham-yadav-pmp--2m0be/?trackingId=060rCmQYjVk8iMExhzBqEA%3D%3D",
+                },
+                {
                     title: "Driving the Edge: Avoid the Top 5 Tyre Mistakes",
                     snippet: "Ensure optimal vehicle performance and safety by understanding and avoiding these common errors related to tyre maintenance and usage.",
                     url: "https://www.linkedin.com/pulse/driving-edge-avoid-top-5-tyre-mistakes-shubham-yadav-pmp--k5umc/?trackingId=6bK4fGYkSLWGo%2B6X6jzm5A%3D%3D",
@@ -803,7 +806,7 @@
                         </ul>
                         <div class="mt-4 pt-4 border-t border-stone-200 text-sm text-stone-600 space-y-1">
                             <p><span class="font-semibold text-indigo-700">Project Scale:</span> ${job.projectDetails.scale}</p>
-                            <p><span class="font-semibold text-indigo-700">Budget Managed:</span> ${job.projectDetails.budget}</p>
+                            ${job.projectDetails.budget ? `<p><span class="font-semibold text-indigo-700">Budget Managed:</span> ${job.projectDetails.budget}</p>` : ''}
                             <p><span class="font-semibold text-indigo-700">Team/Resources:</span> ${job.projectDetails.resources}</p>
                         </div>
                     </div>
